@@ -184,3 +184,35 @@ class InterbreedingVisualizer:
              for human in self.population.members]
         ).T
         return genetic_data
+
+    def plot_demographic_pyramid(self):
+        male_ages = [human.age for human in self.population.members if human.gender == "male"]
+        female_ages = [human.age for human in self.population.members if human.gender == "female"]
+
+        age_bins = np.arange(0, max(male_ages + female_ages) + 5, 5)
+        male_counts, _ = np.histogram(male_ages, bins=age_bins)
+        female_counts, _ = np.histogram(female_ages, bins=age_bins)
+
+        age_labels = [f"{age_bins[i]}-{age_bins[i + 1] - 1}" for i in range(len(age_bins) - 1)]
+
+        male_counts = -male_counts
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        y_positions = np.arange(len(age_labels))  # позиции возрастных групп по вертикали
+
+        ax.barh(y_positions, male_counts, color='blue', alpha=0.7, label='Men')
+        ax.barh(y_positions, female_counts, color='pink', alpha=0.7, label='Women')
+
+        ax.set_yticks(y_positions)
+        ax.set_yticklabels(age_labels)
+        ax.set_xlabel('Population Count')
+        ax.set_title('Demographic Pyramid')
+        ax.legend()
+
+        ax.grid(axis='x', linestyle='--', alpha=0.7)
+
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+
+        plt.tight_layout()
+        plt.show()

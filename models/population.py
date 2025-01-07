@@ -102,7 +102,7 @@ class Population:
             "gender_ratio": {
                 "male": male_count,
                 "female": female_count,
-                "ratio": male_count / female_count if female_count > 0 else 'N/A'
+                "male_per_female_ratio": male_count / female_count if female_count > 0 else 'N/A'
             },
         }
 
