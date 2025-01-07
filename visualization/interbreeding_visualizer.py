@@ -17,7 +17,7 @@ class InterbreedingVisualizer:
 
         # Первый ряд, график распределения по возрасту
         ax1 = fig.add_subplot(spec[0, 0])
-        ax1.hist([human.age for human in self.population.members], bins=12, color="gray", alpha=0.8)
+        ax1.hist([human.age for human in self.population.members], bins=12, color='gray', alpha=0.8)
         ax1.set_title('Age Distribution')
         ax1.set_xlabel('Age (years)')
         ax1.set_ylabel('Frequency')
@@ -25,9 +25,9 @@ class InterbreedingVisualizer:
 
         # Первый ряд, распределение по возрасту по полу
         ax2 = fig.add_subplot(spec[0, 1])
-        male_ages = [human.age for human in self.population.members if human.gender == "male"]
-        female_ages = [human.age for human in self.population.members if human.gender == "female"]
-        ax2.hist([male_ages, female_ages], bins=12, label=["Men", "Women"], color=["blue", "pink"], alpha=0.8)
+        male_ages = [human.age for human in self.population.members if human.gender == 'male']
+        female_ages = [human.age for human in self.population.members if human.gender == 'female']
+        ax2.hist([male_ages, female_ages], bins=12, label=['Men', 'Women'], color=['blue', 'pink'], alpha=0.8)
         ax2.legend()
         ax2.set_title('Age Distribution by Gender')
         ax2.set_xlabel('Age (years)')
@@ -39,11 +39,11 @@ class InterbreedingVisualizer:
         male_history = self.population.male_history
         female_history = self.population.female_history
         years = range(1, self.population.elapsed_years + 1)
-        ax3.plot(years, male_history[1:], label="Male Population", linestyle='--', color='blue')
-        ax3.plot(years, female_history[1:], label="Female Population", linestyle='-', color='red')
-        ax3.set_title("Population Growth (Male vs Female) Over Time")
-        ax3.set_xlabel("Years")
-        ax3.set_ylabel("Population Size")
+        ax3.plot(years, male_history[1:], label='Male Population', linestyle='--', color='blue')
+        ax3.plot(years, female_history[1:], label='Female Population', linestyle='-', color='red')
+        ax3.set_title('Population Growth (Male vs Female) Over Time')
+        ax3.set_xlabel('Years')
+        ax3.set_ylabel('Population Size')
         ax3.grid(True)
         ax3.legend()
         ax3.set_ylim(bottom=0)
@@ -51,21 +51,21 @@ class InterbreedingVisualizer:
         # Второй ряд, Box Plot для генетического распределения
         ax4 = fig.add_subplot(spec[1, 1])
         ax4.boxplot([genetic_data[0], genetic_data[1]], patch_artist=True,
-                    boxprops=dict(facecolor="lightgreen", color="green"),
-                    medianprops=dict(color="red"))
+                    boxprops=dict(facecolor='lightgreen', color='green'),
+                    medianprops=dict(color='red'))
         ax4.set_title('Genetic Composition')
-        ax4.set_xticklabels(["Green", "Brown"])
+        ax4.set_xticklabels(['Green', 'Brown'])
         ax4.set_ylabel('Proportion')
         ax4.grid(axis='y', linestyle='--', alpha=0.7)
 
         # Третий ряд, Stacked Bar Chart на всю ширину
         ax5 = fig.add_subplot(spec[2, :])  # Объединяем две колонки
-        sort_order = np.argsort(genetic_data[0])[::-1]  # По убыванию компонента "green"
+        sort_order = np.argsort(genetic_data[0])[::-1]  # По убыванию компонента 'green'
         genetic_data_sorted = genetic_data[:, sort_order]
         indices_sorted = np.arange(len(self.population.members))
 
-        ax5.bar(indices_sorted, genetic_data_sorted[0], label="Green", color="green", alpha=0.7)
-        ax5.bar(indices_sorted, genetic_data_sorted[1], bottom=genetic_data_sorted[0], label="Brown", color="brown", alpha=0.7)
+        ax5.bar(indices_sorted, genetic_data_sorted[0], label='Green', color='green', alpha=0.7)
+        ax5.bar(indices_sorted, genetic_data_sorted[1], bottom=genetic_data_sorted[0], label='Brown', color='brown', alpha=0.7)
         ax5.set_title('Genetic Composition')
         ax5.set_xlabel('Individuals (sorted by % Green)')
         ax5.set_ylabel('Proportion')
@@ -77,7 +77,7 @@ class InterbreedingVisualizer:
     # Age Distribution
     def plot_age_distribution(self):
         ages = [human.age for human in self.population.members]
-        plt.hist(ages, bins=12, color="gray", alpha=0.8)
+        plt.hist(ages, bins=12, color='gray', alpha=0.8)
         plt.title('Age Distribution')
         plt.xlabel('Age (years)')
         plt.ylabel('Frequency')
@@ -90,16 +90,16 @@ class InterbreedingVisualizer:
         female_history = self.population.female_history
 
         if not male_history or not female_history:
-            print("Нет данных о росте населения.")
+            print('Нет данных о росте населения.')
             return
 
         years = range(1, self.population.elapsed_years + 1)
 
-        plt.plot(years, male_history[1:], label="Male Population", linestyle='--', color='blue')
-        plt.plot(years, female_history[1:], label="Female Population", linestyle='-', color='red')
-        plt.title("Population Growth (Male vs Female) Over Time")
-        plt.xlabel("Years")
-        plt.ylabel("Population Size")
+        plt.plot(years, male_history[1:], label='Male Population', linestyle='--', color='blue')
+        plt.plot(years, female_history[1:], label='Female Population', linestyle='-', color='red')
+        plt.title('Population Growth (Male vs Female) Over Time')
+        plt.xlabel('Years')
+        plt.ylabel('Population Size')
         plt.grid(True)
         plt.legend()
         plt.ylim(bottom=0)
@@ -107,13 +107,13 @@ class InterbreedingVisualizer:
 
     # Age Distribution by Gender
     def plot_age_distribution_by_gender(self):
-        male_ages = [human.age for human in self.population.members if human.gender == "male"]
-        female_ages = [human.age for human in self.population.members if human.gender == "female"]
+        male_ages = [human.age for human in self.population.members if human.gender == 'male']
+        female_ages = [human.age for human in self.population.members if human.gender == 'female']
         plt.hist(
             [male_ages, female_ages],
             bins=12,
-            label=["Men", "Women"],
-            color=["blue", "pink"],
+            label=['Men', 'Women'],
+            color=['blue', 'pink'],
             alpha=0.8
         )
         plt.legend()
@@ -127,18 +127,18 @@ class InterbreedingVisualizer:
     def plot_genetic_composition(self):
         genetic_data = self._get_genetic_data()
 
-        sort_order = np.argsort(genetic_data[0])[::-1]  # По убыванию компонента "green"
+        sort_order = np.argsort(genetic_data[0])[::-1]  # По убыванию компонента 'green'
         genetic_data_sorted = genetic_data[:, sort_order]
     
         indices_sorted = np.arange(len(self.population.members))
     
-        plt.bar(indices_sorted, genetic_data_sorted[0], label="Green", color="green", alpha=0.7)
+        plt.bar(indices_sorted, genetic_data_sorted[0], label='Green', color='green', alpha=0.7)
         plt.bar(
             indices_sorted,
             genetic_data_sorted[1],
             bottom=genetic_data_sorted[0],
-            label="Brown",
-            color="brown",
+            label='Brown',
+            color='brown',
             alpha=0.7
         )
         plt.title('Genetic Composition')
@@ -154,10 +154,10 @@ class InterbreedingVisualizer:
 
         plt.boxplot(
             [genetic_data[0], genetic_data[1]],
-            tick_labels=["Green", "Brown"],
+            tick_labels=['Green', 'Brown'],
             patch_artist=True,
-            boxprops=dict(facecolor="lightgreen", color="green"),
-            medianprops=dict(color="red")
+            boxprops=dict(facecolor='lightgreen', color='green'),
+            medianprops=dict(color='red')
         )
         plt.title('Genetic Composition')
         plt.ylabel('Proportion')
@@ -173,27 +173,27 @@ class InterbreedingVisualizer:
         
         ax.set_title('Genetic Composition (Violin Plot)')
         ax.set_xticks([1, 2])
-        ax.set_xticklabels(["Green", "Brown"])
+        ax.set_xticklabels(['Green', 'Brown'])
         ax.set_ylabel('Proportion')
         ax.grid(axis='y', linestyle='--', alpha=0.7)
         plt.show()
 
     def _get_genetic_data(self):
         genetic_data = np.array(
-            [[human.genotype.get("green", 0), human.genotype.get("brown", 0)]
+            [[human.genotype.get('green', 0), human.genotype.get('brown', 0)]
              for human in self.population.members]
         ).T
         return genetic_data
 
     def plot_demographic_pyramid(self):
-        male_ages = [human.age for human in self.population.members if human.gender == "male"]
-        female_ages = [human.age for human in self.population.members if human.gender == "female"]
+        male_ages = [human.age for human in self.population.members if human.gender == 'male']
+        female_ages = [human.age for human in self.population.members if human.gender == 'female']
 
         age_bins = np.arange(0, max(male_ages + female_ages) + 5, 5)
         male_counts, _ = np.histogram(male_ages, bins=age_bins)
         female_counts, _ = np.histogram(female_ages, bins=age_bins)
 
-        age_labels = [f"{age_bins[i]}-{age_bins[i + 1] - 1}" for i in range(len(age_bins) - 1)]
+        age_labels = [f'{age_bins[i]}-{age_bins[i + 1] - 1}' for i in range(len(age_bins) - 1)]
 
         male_counts = -male_counts
 

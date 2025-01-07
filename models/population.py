@@ -1,5 +1,6 @@
 import copy
 import math
+import numpy as np
 import random
 from .human import Human
 
@@ -8,8 +9,7 @@ class Population:
     def __init__(self, population_settings):
         self.members = []
         self.elapsed_years = 0
-        self.male_history = []
-        self.female_history = []
+        self.history = []
         self.population_settings = population_settings
         self.birth_probability = self.population_settings['birth_probability']
         self.death_probability = self.population_settings['death_probability']
@@ -54,56 +54,69 @@ class Population:
             self._add_human(Human(gender=gender, genotype=genotype, age=age))
 
         self.initial_members = copy.deepcopy(self.members)
-        self._save_genders_history()
+        self._save_yearly_statistics()
 
     def evolve(self, years):
         self.elapsed_years += years
         for _ in range(years):
             self._simulate_year()
-            self._save_genders_history()
+            self._save_yearly_statistics()
 
     @property
     def stat(self):
-        """
+        '''
         Возвращает статистику о популяции.
         :return: Словарь с ключами на английском языке.
-        """
-        annual_growth_rate_percent = None
-
+        '''
         if not self.members:
             return {
                 'elapsed_years': self.elapsed_years,
                 'population_size': 0,
-                'growth_rate_percent': annual_growth_rate_percent,
+                'annual_growth_rate_percent': None,
                 'min_age': None,
                 'max_age': None,
                 'average_age': None,
                 'gender_ratio': None,
+                'green_mean': None,
+                'green_std_dev': None,
+                'brown_mean': None,
+                'brown_std_dev': None,
             }
-    
-        ages = [human.age for human in self.members]
-        male_count = self.male_history[-1]
-        female_count = self.female_history[-1]
-        population_size = len(self.members)
+
+        last_year_data = self.history[-1]
+
+        population_size = last_year_data['male_count'] + last_year_data['female_count']
         if self.elapsed_years > 0:
-            initial_population_size = \
-                self.male_history[0] + self.female_history[0]
+            initial_population_size = (
+                self.history[0]['male_count'] + self.history[0]['female_count']
+            )
             annual_growth_rate = math.log(
-                population_size / initial_population_size) / self.elapsed_years
+                population_size / initial_population_size
+            ) / self.elapsed_years
             annual_growth_rate_percent = round(annual_growth_rate * 100, 3)
+        else:
+            annual_growth_rate_percent = None
 
         return {
             'elapsed_years': self.elapsed_years,
-            "population_size": len(self.members),
+            'population_size': population_size,
             'annual_growth_rate_percent': annual_growth_rate_percent,
-            "min_age": min(ages),
-            "max_age": max(ages),
-            "average_age": sum(ages) / len(ages),
-            "gender_ratio": {
-                "male": male_count,
-                "female": female_count,
-                "male_per_female_ratio": male_count / female_count if female_count > 0 else 'N/A'
+            'min_age': min(human.age for human in self.members),
+            'max_age': max(human.age for human in self.members),
+            'average_age':
+                round(sum(human.age for human in self.members) / len(self.members), 1),
+            'gender_ratio': {
+                'male': last_year_data['male_count'],
+                'female': last_year_data['female_count'],
+                'male_per_female_ratio': (
+                    round(last_year_data['male_count'] / last_year_data['female_count'], 1)
+                    if last_year_data['female_count'] > 0 else 'N/A'
+                ),
             },
+            'green_mean': round(last_year_data['green_mean'], 2),
+            'green_std_dev': round(last_year_data['green_std_dev'], 2),
+            'brown_mean': round(last_year_data['brown_mean'], 2),
+            'brown_std_dev': round(last_year_data['brown_std_dev'], 2),
         }
 
     def _add_human(self, human):
@@ -114,17 +127,32 @@ class Population:
 
     def _simulate_year(self):
         self.fertile_males = self._get_fertile_males()
-    
         for human in list(self.members):
             human.age += 1
             self._simulate_death(human)
             self._simulate_birth(human)
+        self._save_yearly_statistics()
 
-    def _save_genders_history(self):
-        male_count = sum(1 for human in self.members if human.gender == 'male')
-        female_count = sum(1 for human in self.members if human.gender == 'female')
-        self.male_history.append(male_count)
-        self.female_history.append(female_count)
+    def _save_yearly_statistics(self):
+        male_ages = [human.age for human in self.members if human.gender == 'male']
+        female_ages = [human.age for human in self.members if human.gender == 'female']
+
+        green_concentrations = [human.genotype['green'] for human in self.members]
+        brown_concentrations = [human.genotype['brown'] for human in self.members]
+
+        year_stats = {
+            'year': self.elapsed_years,
+            'male_count': len(male_ages),
+            'female_count': len(female_ages),
+            'average_male_age': sum(male_ages) / len(male_ages) if male_ages else None,
+            'average_female_age': sum(female_ages) / len(female_ages) if female_ages else None,
+            'green_mean': sum(green_concentrations) / len(green_concentrations),
+            'green_std_dev': np.std(green_concentrations),
+            'brown_mean': sum(brown_concentrations) / len(brown_concentrations),
+            'brown_std_dev': np.std(brown_concentrations),
+        }
+
+        self.history.append(year_stats)
 
     def _simulate_death(self, human):
         if random.random() < self.death_probability(
@@ -162,7 +190,7 @@ class Population:
         return fertile_males
     
     def __repr__(self):
-        return f"Population(size={self.get_population_size()})"
+        return f'Population(size={self.get_population_size()})'
 
     @staticmethod
     def _combine_genetics(genotype_1, genotype_2):
