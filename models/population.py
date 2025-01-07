@@ -60,7 +60,6 @@ class Population:
         self.elapsed_years += years
         for _ in range(years):
             self._simulate_year()
-            self._save_yearly_statistics()
 
     @property
     def stat(self):
@@ -141,7 +140,7 @@ class Population:
         brown_concentrations = [human.genotype['brown'] for human in self.members]
 
         year_stats = {
-            'year': self.elapsed_years,
+            'year': self.history[-1]['year'] + 1 if self.history else 0,
             'male_count': len(male_ages),
             'female_count': len(female_ages),
             'average_male_age': sum(male_ages) / len(male_ages) if male_ages else None,
